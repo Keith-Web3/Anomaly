@@ -1,3 +1,10 @@
+import MapWrapper from './components/MapWrapper'
+
 export default function Home() {
-  return <p>Hello world</p>
+  return (
+    <div>
+      <p>Hello world</p>
+      <MapWrapper />
+    </div>
+  )
 }

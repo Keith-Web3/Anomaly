@@ -8,10 +8,19 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "browserslist": {
+    "production": [
+      "defaults",
+      "not ie 11"
+    ]
+  },
   "dependencies": {
+    "@types/mapbox-gl": "^3.4.0",
+    "mapbox-gl": "^3.5.2",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-map-gl": "^7.1.7",
     "tailwind-merge": "^2.5.0"
   },
   "devDependencies": {

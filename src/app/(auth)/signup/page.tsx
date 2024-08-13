@@ -26,6 +26,7 @@ export default function SignUp() {
         <input
           type="email"
           placeholder="Email address"
+          required
           className="border border-[#E5E5E5] rounded-lg outline-none placeholder:text-[#747474] w-full mb-4 py-3 px-5"
         />
         <label
@@ -37,6 +38,8 @@ export default function SignUp() {
             name="password"
             id="password"
             placeholder="Password"
+            minLength={5}
+            required
             className="border-none outline-none w-full placeholder:text-[#747474]"
           />
           <Image src={eyeImg} alt="eye" className="cursor-pointer" />
