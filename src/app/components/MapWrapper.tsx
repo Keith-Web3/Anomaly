@@ -66,7 +66,7 @@ export default function MapWrapper() {
         </button>
       </div>
       <div className="grid min-h-screen">
-        {!!userLocation.latitude && !!userLocation.longitude && (
+        {/* {!!userLocation.latitude && !!userLocation.longitude && (
           <Map
             initialViewState={{
               latitude: userLocation.latitude,
@@ -90,7 +90,7 @@ export default function MapWrapper() {
               color="red"
             />
           </Map>
-        )}
+        )} */}
       </div>
     </>
   )
