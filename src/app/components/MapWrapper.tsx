@@ -46,7 +46,7 @@ export default function MapWrapper() {
   return (
     <>
       <button
-        className="w-14 h-14 rounded-full bg-white grid place-content-center absolute inset-[50%_1em_auto_auto] translate-y-[-50%] z-[1]"
+        className="w-14 h-14 rounded-full bg-white grid place-content-center absolute inset-[50%_1em_auto_auto] translate-y-[-50%] z-[1] shadow-[0_0_69px_#00000029]"
         onClick={() => setIsVoiceMuted(prev => !prev)}
       >
         {!isVoiceMuted ? (
