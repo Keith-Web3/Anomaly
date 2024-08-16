@@ -7,7 +7,7 @@ import starsImg from '../assets/stars.svg'
 import whiteRoad from '../assets/road-white.svg'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
-function Analysis() {
+function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -24,6 +24,7 @@ function Analysis() {
         ref={buttonRef}
         className="hidden"
         onClick={() => {
+          if (isVoiceMuted) return
           const msg = new SpeechSynthesisUtterance(
             "Heads up! There's an anomaly 12km away from you."
           )

@@ -3,9 +3,13 @@ import { useState, useEffect } from 'react'
 import Map, { Marker } from 'react-map-gl'
 import { twMerge } from 'tailwind-merge'
 import { Roboto } from 'next/font/google'
+import Image from 'next/image'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
+import volume from '../assets/volume.svg'
+import volumeMuted from '../assets/volume_muted.svg'
+import Analysis from './Analysis'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
@@ -15,6 +19,7 @@ const roboto = Roboto({
 
 export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
+  const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false)
   const [userLocation, setUserLocation] = useState<{
     latitude: number
     longitude: number
@@ -40,6 +45,16 @@ export default function MapWrapper() {
 
   return (
     <>
+      <button
+        className="w-14 h-14 rounded-full bg-white grid place-content-center absolute inset-[50%_1em_auto_auto] translate-y-[-50%] z-[1]"
+        onClick={() => setIsVoiceMuted(prev => !prev)}
+      >
+        {!isVoiceMuted ? (
+          <Image src={volume} alt="volume" className="w-[75%] mx-auto" />
+        ) : (
+          <Image src={volumeMuted} alt="mute" className="w-[75%] mx-auto" />
+        )}
+      </button>
       <div
         className={twMerge(
           'flex items-center w-max mx-auto rounded fixed inset-[1em_50%_auto_auto] z-[1] overflow-hidden translate-x-1/2 shadow-[0_1.5px_4.4px_#00000033] bg-white',
@@ -66,7 +81,7 @@ export default function MapWrapper() {
         </button>
       </div>
       <div className="grid min-h-screen">
-        {/* {!!userLocation.latitude && !!userLocation.longitude && (
+        {!!userLocation.latitude && !!userLocation.longitude && (
           <Map
             initialViewState={{
               latitude: userLocation.latitude,
@@ -90,8 +105,9 @@ export default function MapWrapper() {
               color="red"
             />
           </Map>
-        )} */}
+        )}
       </div>
+      <Analysis isVoiceMuted={isVoiceMuted} />
     </>
   )
 }
