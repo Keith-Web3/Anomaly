@@ -81,7 +81,7 @@ export default function MapWrapper() {
             satellite
           </button>
         </div>
-        <div className="grid min-h-screen h-full ">
+        <div className="grid min-h-screen h-full">
           {!!userLocation.latitude && !!userLocation.longitude && (
             <Map
               initialViewState={{
@@ -98,6 +98,10 @@ export default function MapWrapper() {
               mapboxAccessToken={MAPBOX_TOKEN}
               onClick={e => {
                 console.log(e)
+                setUserLocation({
+                  latitude: e.lngLat.lat,
+                  longitude: e.lngLat.lng,
+                })
               }}
             >
               <Marker
@@ -109,7 +113,7 @@ export default function MapWrapper() {
           )}
         </div>
       </div>
-      <Analysis isVoiceMuted={isVoiceMuted} />
+      <Analysis isVoiceMuted={isVoiceMuted} userLocation={userLocation} />
     </>
   )
 }

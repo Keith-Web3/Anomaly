@@ -7,7 +7,15 @@ import starsImg from '../assets/stars.svg'
 import whiteRoad from '../assets/road-white.svg'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
-function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
+interface AnalysisProps {
+  isVoiceMuted: boolean
+  userLocation: {
+    latitude: number
+    longitude: number
+  }
+}
+
+function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -158,9 +166,11 @@ function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
       </p>
       <div className="flex items-center gap-4">
         <input
-          type="number"
+          type="string"
           name="longitude and latitude"
-          className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] outline-none"
+          defaultValue={`${userLocation.longitude} ${userLocation.latitude}`}
+          disabled
+          className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] cursor-not-allowed outline-none"
         />
         <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
           &deg;(N/S)
