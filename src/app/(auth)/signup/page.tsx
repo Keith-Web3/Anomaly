@@ -16,7 +16,10 @@ export default function SignUp() {
         <p className="text-center text-[#222222] mb-4 mt-6 font-medium text-lg">
           Get started
         </p>
-        <button className="flex items-center border-none outline-none bg-[#F6F6F6] w-full cursor-pointer gap-2 px-5 py-3 justify-center rounded-lg">
+        <button
+          className="flex items-center border-none outline-none bg-[#F6F6F6] w-full gap-2 px-5 py-3 justify-center rounded-lg cursor-not-allowed"
+          disabled
+        >
           <Image src={googleImg} alt="google" />
           <span className="text-[#747474] font-medium">
             Sign in with google

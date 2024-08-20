@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
-import starsImg from '../assets/stars.svg'
-import whiteRoad from '../assets/road-white.svg'
+import starsImg from '@/assets/stars.svg'
+import whiteRoad from '@/assets/road-white.svg'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {

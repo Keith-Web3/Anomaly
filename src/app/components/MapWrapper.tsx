@@ -7,8 +7,8 @@ import Image from 'next/image'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
-import volume from '../assets/volume.svg'
-import volumeMuted from '../assets/volume_muted.svg'
+import volume from '@/assets/volume.svg'
+import volumeMuted from '@/assets/volume_muted.svg'
 import Analysis from './Analysis'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
