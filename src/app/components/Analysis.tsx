@@ -19,7 +19,7 @@ function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
   // }, [])
 
   return (
-    <div className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max fixed inset-[50%_auto_auto_1em] translate-y-[-50%]">
+    <div className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto">
       <button
         ref={buttonRef}
         className="hidden"
@@ -88,7 +88,7 @@ function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
             className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
           />
         </label>
-        <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end">
+        <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
           m/s<sup>2</sup>
         </p>
       </div>
@@ -127,8 +127,43 @@ function Analysis({ isVoiceMuted }: { isVoiceMuted: boolean }) {
             className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
           />
         </label>
-        <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end">
+        <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
           rad/s
+        </p>
+      </div>
+      <p className="mt-4 text-[#262626] font-medium mb-1">Temperature</p>
+      <div className="flex items-center gap-4">
+        <input
+          type="number"
+          name="temperature"
+          className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] outline-none"
+        />
+        <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+          &deg;C
+        </p>
+      </div>
+      <p className="mt-4 text-[#262626] font-medium mb-1">Vibration</p>
+      <div className="flex items-center gap-4">
+        <input
+          type="number"
+          name="vibration"
+          className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
+        />
+        <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+          -
+        </p>
+      </div>
+      <p className="mt-4 text-[#262626] font-medium mb-1">
+        Longitude and Latitude
+      </p>
+      <div className="flex items-center gap-4">
+        <input
+          type="number"
+          name="longitude and latitude"
+          className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] outline-none"
+        />
+        <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+          &deg;(N/S)
         </p>
       </div>
       <button className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] rounded cursor-pointer px-5 py-3 w-full mt-4 justify-center text-white">

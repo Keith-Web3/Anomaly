@@ -17,7 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={twMerge('min-h-screen', inter.className)}>
+      <body
+        className={twMerge(
+          'min-h-[850px] h-screen grid grid-rows-[1fr] grid-cols-[auto_1fr]',
+          inter.className
+        )}
+      >
         {children}
       </body>
     </html>
