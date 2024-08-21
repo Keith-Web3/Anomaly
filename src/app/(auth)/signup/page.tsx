@@ -7,10 +7,11 @@ import toast from 'react-hot-toast'
 
 import roadImg from '@/assets/road.svg'
 import googleImg from '@/assets/google.svg'
+import eyeImg from '@/assets/eye.svg'
+import eyeHiddenImg from '@/assets/eye-slash.svg'
 
 import { signup } from '@/actions'
 import LoadingSpinner from '@/app/components/LoadingSpinner'
-import EyeIcon from '@/app/components/EyeIcon'
 
 export default function SignUp() {
   const [isPasswordDisplayed, setIsPasswordDisplayed] = useState<boolean>(false)
@@ -71,10 +72,21 @@ export default function SignUp() {
             required
             className="border-none outline-none w-full placeholder:text-[#747474]"
           />
-          <EyeIcon
-            visible={isPasswordDisplayed}
-            onClick={() => setIsPasswordDisplayed(prev => !prev)}
-          />
+          {!isPasswordDisplayed ? (
+            <Image
+              src={eyeImg}
+              alt="password displayed"
+              className="cursor-pointer w-6"
+              onClick={() => setIsPasswordDisplayed(true)}
+            />
+          ) : (
+            <Image
+              src={eyeHiddenImg}
+              className="cursor-pointer w-6"
+              alt="password hidden"
+              onClick={() => setIsPasswordDisplayed(false)}
+            />
+          )}
         </label>
         <Submit />
       </form>
