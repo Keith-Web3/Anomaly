@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@types/mapbox-gl": "^3.4.0",
+    "framer-motion": "^11.3.29",
     "mapbox-gl": "^3.5.2",
     "next": "14.2.5",
     "react": "^18",
