@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 import roadImg from '@/assets/road.svg'
 import googleImg from '@/assets/google.svg'
@@ -15,11 +16,10 @@ import LoadingSpinner from '@/app/components/LoadingSpinner'
 
 export default function SignUp() {
   const [isPasswordDisplayed, setIsPasswordDisplayed] = useState<boolean>(false)
-  const [state, formAction, isPending] = useFormState(signup, '')
+  const [state, formAction] = useFormState(signup, '')
+  const router = useRouter()
 
-  console.log('state:', state)
   useEffect(() => {
-    console.log('state1:', state)
     if (state === '') return
 
     const parsedState = JSON.parse(state)
@@ -28,6 +28,7 @@ export default function SignUp() {
       return
     }
     toast.success(parsedState.success)
+    router.push('/')
   }, [state])
 
   return (
