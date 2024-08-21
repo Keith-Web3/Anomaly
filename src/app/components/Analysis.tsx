@@ -17,25 +17,23 @@ interface AnalysisProps {
 
 function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
+  const [anomalyMessage, setAnomalyMessage] = useState<string>('')
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // useEffect(() => {
-  //   const msg = new SpeechSynthesisUtterance('Hello, world!')
-  //   speechSynthesis.cancel()
-  //   speechSynthesis.speak(msg)
-  //   console.log('read message')
-  // }, [])
+  useEffect(() => {
+    if (anomalyMessage === '') return
+    buttonRef.current!.click()
+  }, [anomalyMessage])
 
   return (
-    <div className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto">
+    <form className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto">
       <button
         ref={buttonRef}
         className="hidden"
+        type="button"
         onClick={() => {
           if (isVoiceMuted) return
-          const msg = new SpeechSynthesisUtterance(
-            "Heads up! There's an anomaly 12km away from you."
-          )
+          const msg = new SpeechSynthesisUtterance(anomalyMessage)
 
           msg.pitch = 1.0 // Normal pitch for a balanced tone
           msg.rate = 0.95 // Slightly slower rate to mimic natural speech
@@ -176,7 +174,10 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
           &deg;(N/S)
         </p>
       </div>
-      <button className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] rounded cursor-pointer px-5 py-3 w-full mt-4 justify-center text-white">
+      <button
+        className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] rounded cursor-pointer px-5 py-3 w-full mt-4 justify-center text-white"
+        type="submit"
+      >
         <Image src={starsImg} alt="predict" className="w-6" />
         predict
       </button>
@@ -207,7 +208,27 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
           </div>
         </>
       )}
-    </div>
+      <button
+        className="bg-[#831DD3] cursor-pointer fixed inset-[auto_50%_1em_auto] translate-x-1/2 border-none outline-none text-white px-5 py-3 rounded capitalize"
+        type="button"
+        onClick={() => {
+          const isThereAnomaly = Math.random() >= 0.5
+
+          if (isThereAnomaly) {
+            const anomalyDistance = (Math.random() * 100).toFixed(1)
+            setAnomalyState('detected')
+            setAnomalyMessage(
+              `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+            )
+            return
+          }
+          setAnomalyState('none')
+          setAnomalyMessage(`No anomaly detected, keep moving.`)
+        }}
+      >
+        simulate anomaly
+      </button>
+    </form>
   )
 }
 
