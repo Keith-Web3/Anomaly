@@ -12,7 +12,6 @@ export const signup = async function (initialState: string, data: FormData) {
       body: JSON.stringify({
         email,
         password,
-        username: 'placeholder',
       }),
       headers: {
         'Content-Type': 'application/json',
