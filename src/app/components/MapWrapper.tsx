@@ -4,6 +4,7 @@ import Map, { Marker } from 'react-map-gl'
 import { twMerge } from 'tailwind-merge'
 import { Roboto } from 'next/font/google'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
@@ -44,7 +45,13 @@ export default function MapWrapper() {
   const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>()
 
   useEffect(() => {
-    getAnomalyTable().then(res => setAnomalyData(res))
+    getAnomalyTable().then(res => {
+      if (res.error) {
+        toast.error('Error fetching anomaly data')
+        return
+      }
+      setAnomalyData(res)
+    })
   }, [])
 
   return (
