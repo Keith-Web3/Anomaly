@@ -32,4 +32,15 @@ export const signup = async function (initialState: string, data: FormData) {
   return JSON.stringify({ success: 'Signed up successfully' })
 }
 
-// https://road-anomaly-1672548ad216.herokuapp.com/
+export const getAnomalyTable = async function () {
+  const res = await fetch(`${BASE_URL}/api/roads`)
+
+  if (!res.ok) {
+    return { error: 'Something went wrong, please reload.' }
+  }
+
+  const data = await res.json()
+  console.log(data)
+
+  return data.data
+}

@@ -8,6 +8,7 @@ import starsImg from '@/assets/stars.svg'
 import whiteRoad from '@/assets/road-white.svg'
 import redRoad from '@/assets/road-red.svg'
 import cancelImg from '@/assets/cancel.svg'
+import { Anomaly } from './MapWrapper'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
@@ -16,9 +17,10 @@ interface AnalysisProps {
     latitude: number
     longitude: number
   }
+  anomaly?: Anomaly
 }
 
-function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
+function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const [anomalyMessage, setAnomalyMessage] = useState<string>('')
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -74,7 +76,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="x-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Accel_X}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
@@ -85,7 +88,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="y-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Accel_Y}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
@@ -96,7 +100,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="z-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Accel_Z}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
@@ -113,7 +118,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="x-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Gyro_X}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
@@ -124,7 +130,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="y-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Gyro_Y}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
@@ -135,7 +142,8 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
             <input
               type="number"
               name="z-axis"
-              className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[75px] outline-none"
+              defaultValue={anomaly?.Gyro_Z}
+              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
@@ -158,23 +166,37 @@ function Analysis({ isVoiceMuted, userLocation }: AnalysisProps) {
           <input
             type="number"
             name="vibration"
+            defaultValue={anomaly?.Vibration}
             className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
           />
           <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
             -
           </p>
         </div>
-        <p className="mt-4 text-[#262626] font-medium mb-1">
+        {/* <p className="mt-4 text-[#262626] font-medium mb-1">
           Longitude and Latitude
-        </p>
-        <div className="flex items-center gap-4">
-          <input
-            type="string"
-            name="longitude and latitude"
-            defaultValue={`${userLocation.longitude} ${userLocation.latitude}`}
-            disabled
-            className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] cursor-not-allowed outline-none"
-          />
+        </p> */}
+        <div className="flex items-center gap-4 mt-4">
+          <div className="flex items-center gap-2">
+            <div>
+              <p className="mt-4 text-[#262626] font-medium mb-1">Longitude</p>
+              <input
+                type="string"
+                name="longitude"
+                defaultValue={`${userLocation.longitude}`}
+                className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+              />
+            </div>
+            <div>
+              <p className="mt-4 text-[#262626] font-medium mb-1">Latitude</p>
+              <input
+                type="string"
+                name="latitude"
+                defaultValue={`${userLocation.latitude}`}
+                className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+              />
+            </div>
+          </div>
           <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
             &deg;(N/S)
           </p>

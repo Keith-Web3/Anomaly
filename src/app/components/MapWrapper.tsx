@@ -9,13 +9,29 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
 import volume from '@/assets/volume.svg'
 import volumeMuted from '@/assets/volume_muted.svg'
+
 import Analysis from './Analysis'
+import { getAnomalyTable } from '@/actions'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
   subsets: ['latin'],
   weight: ['500', '400'],
 })
+
+export interface Anomaly {
+  Accel_X: number
+  Accel_Y: number
+  Accel_Z: number
+  Anomaly: number
+  Gyro_X: number
+  Gyro_Y: number
+  Gyro_Z: number
+  Latitude: number
+  Longitude: number
+  Vibration: number
+  _id: string
+}
 
 export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
@@ -24,23 +40,11 @@ export default function MapWrapper() {
     latitude: number
     longitude: number
   }>({ latitude: 0, longitude: 0 })
+  const [anomalyData, setAnomalyData] = useState<Anomaly[]>([])
+  const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>()
 
   useEffect(() => {
-    // Check if the Geolocation API is supported
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const { latitude, longitude } = position.coords
-          setUserLocation({ latitude, longitude })
-          console.log(latitude, longitude)
-        },
-        error => {
-          console.error('Error fetching geolocation: ', error)
-        }
-      )
-    } else {
-      console.error('Geolocation is not supported by this browser.')
-    }
+    getAnomalyTable().then(res => setAnomalyData(res))
   }, [])
 
   return (
@@ -82,11 +86,11 @@ export default function MapWrapper() {
           </button>
         </div>
         <div className="grid min-h-screen h-full">
-          {!!userLocation.latitude && !!userLocation.longitude && (
+          {!!anomalyData.length && (
             <Map
               initialViewState={{
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
+                latitude: anomalyData[0].Latitude,
+                longitude: anomalyData[0].Longitude,
                 zoom: 14,
               }}
               style={{ width: '100%', height: '100%' }}
@@ -104,16 +108,30 @@ export default function MapWrapper() {
                 })
               }}
             >
-              <Marker
-                longitude={userLocation.longitude}
-                latitude={userLocation.latitude}
-                color="red"
-              />
+              {anomalyData.map(anomaly => (
+                <Marker
+                  longitude={anomaly.Longitude}
+                  latitude={anomaly.Latitude}
+                  key={anomaly._id}
+                  color={`#${anomaly._id.slice(0, 6)}`}
+                  onClick={() => {
+                    setSelectedAnomaly(anomaly)
+                    setUserLocation({
+                      latitude: anomaly.Latitude,
+                      longitude: anomaly.Longitude,
+                    })
+                  }}
+                />
+              ))}
             </Map>
           )}
         </div>
       </div>
-      <Analysis isVoiceMuted={isVoiceMuted} userLocation={userLocation} />
+      <Analysis
+        isVoiceMuted={isVoiceMuted}
+        userLocation={userLocation}
+        anomaly={selectedAnomaly}
+      />
     </>
   )
 }
