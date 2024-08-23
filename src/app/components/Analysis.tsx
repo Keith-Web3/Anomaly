@@ -150,17 +150,6 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             rad/s
           </p>
         </div>
-        <p className="mt-4 text-[#262626] font-medium mb-1">Temperature</p>
-        <div className="flex items-center gap-4">
-          <input
-            type="number"
-            name="temperature"
-            className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc(75px + 1em)] outline-none"
-          />
-          <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
-            &deg;C
-          </p>
-        </div>
         <p className="mt-4 text-[#262626] font-medium mb-1">Vibration</p>
         <div className="flex items-center gap-4">
           <input
