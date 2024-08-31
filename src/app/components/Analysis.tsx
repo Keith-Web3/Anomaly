@@ -8,7 +8,9 @@ import starsImg from '@/assets/stars.svg'
 import whiteRoad from '@/assets/road-white.svg'
 import redRoad from '@/assets/road-red.svg'
 import cancelImg from '@/assets/cancel.svg'
+
 import { Anomaly } from './MapWrapper'
+import { predictAnomaly } from '@/actions'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
@@ -32,7 +34,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
 
   return (
     <>
-      <form className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto">
+      <form
+        className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto"
+        action={predictAnomaly}
+      >
         <button
           ref={buttonRef}
           className="hidden"
@@ -69,38 +74,41 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
         </p>
         <div className="flex items-center gap-4">
           <label
-            htmlFor="x-axis"
+            htmlFor="Accel_X"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             x-axis
             <input
               type="number"
-              name="x-axis"
+              name="Accel_X"
               defaultValue={anomaly?.Accel_X}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
-            htmlFor="y-axis"
+            htmlFor="Accel_Y"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             y-axis
             <input
               type="number"
-              name="y-axis"
+              name="Accel_Y"
               defaultValue={anomaly?.Accel_Y}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
-            htmlFor="z-axis"
+            htmlFor="Accel_Z"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             z-axis
             <input
               type="number"
-              name="z-axis"
+              name="Accel_Z"
               defaultValue={anomaly?.Accel_Z}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
@@ -111,38 +119,41 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
         <p className="mt-4 text-[#262626] font-medium mb-1">Angular velocity</p>
         <div className="flex items-center gap-4">
           <label
-            htmlFor="x-axis"
+            htmlFor="Gyro_X"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             x-axis
             <input
               type="number"
-              name="x-axis"
+              name="Gyro_X"
               defaultValue={anomaly?.Gyro_X}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
-            htmlFor="y-axis"
+            htmlFor="Gyro_Y"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             y-axis
             <input
               type="number"
-              name="y-axis"
+              name="Gyro_Y"
               defaultValue={anomaly?.Gyro_Y}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
           <label
-            htmlFor="z-axis"
+            htmlFor="Gyro_Z"
             className="text-[#686868] text-sm flex flex-col items-start gap-2"
           >
             z-axis
             <input
               type="number"
-              name="z-axis"
+              name="Gyro_Z"
               defaultValue={anomaly?.Gyro_Z}
+              required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
           </label>
@@ -154,25 +165,24 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
         <div className="flex items-center gap-4">
           <input
             type="number"
-            name="vibration"
+            name="Vibration"
             defaultValue={anomaly?.Vibration}
+            required
             className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
           />
           <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
             -
           </p>
         </div>
-        {/* <p className="mt-4 text-[#262626] font-medium mb-1">
-          Longitude and Latitude
-        </p> */}
         <div className="flex items-center gap-4 mt-4">
           <div className="flex items-center gap-2">
             <div>
               <p className="mt-4 text-[#262626] font-medium mb-1">Longitude</p>
               <input
                 type="string"
-                name="longitude"
-                defaultValue={`${userLocation.longitude}`}
+                name="Longitude"
+                defaultValue={`${anomaly?.Longitude}`}
+                required
                 className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
               />
             </div>
@@ -180,8 +190,9 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
               <p className="mt-4 text-[#262626] font-medium mb-1">Latitude</p>
               <input
                 type="string"
-                name="latitude"
-                defaultValue={`${userLocation.latitude}`}
+                name="Latitude"
+                defaultValue={`${anomaly?.Latitude}`}
+                required
                 className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
               />
             </div>

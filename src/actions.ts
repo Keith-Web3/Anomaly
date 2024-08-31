@@ -43,3 +43,32 @@ export const getAnomalyTable = async function () {
 
   return data.data
 }
+
+export const predictAnomaly = async function (formData: FormData) {
+  const anomalyFields = [
+    'Accel_X',
+    'Accel_Y',
+    'Accel_Z',
+    'Gyro_X',
+    'Gyro_Y',
+    'Gyro_Z',
+    'Vibration',
+    'Longitude',
+    'Latitude',
+  ]
+  const parsedData: { [key: string]: FormDataEntryValue } = {}
+  for (const field of anomalyFields) {
+    parsedData[field] = formData.get(field)!
+  }
+  console.log(parsedData)
+  const res = await fetch(`${BASE_URL}/api/roads/predict`, {
+    method: 'POST',
+    body: JSON.stringify(parsedData),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  const data = await res.json()
+
+  console.log(data)
+}
