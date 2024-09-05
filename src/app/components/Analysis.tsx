@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useReducer } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useFormStatus, useFormState } from 'react-dom'
 
 import starsImg from '@/assets/stars.svg'
 import whiteRoad from '@/assets/road-white.svg'
@@ -11,6 +12,8 @@ import cancelImg from '@/assets/cancel.svg'
 
 import { Anomaly } from './MapWrapper'
 import { predictAnomaly } from '@/actions'
+import LoadingSpinner from './LoadingSpinner'
+import toast from 'react-hot-toast'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
@@ -54,6 +57,13 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
   const [anomalyMessage, setAnomalyMessage] = useState<string>('')
   const [derivedAnomaly, dispatchAnomaly] = useReducer(reducer, anomaly!)
 
+  const [state, formAction] = useFormState(
+    predictAnomaly,
+    JSON.stringify({ id: 0 })
+  )
+
+  console.log('state:', state)
+
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -65,11 +75,33 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
     dispatchAnomaly({ type: 'reset-all', payload: anomaly! })
   }, [anomaly?.Latitude, anomaly?.Longitude])
 
+  const anomalyPrediction = JSON.parse(state)
+  useEffect(() => {
+    if (!anomalyPrediction.anomaly && !anomalyPrediction.error) return
+    if (anomalyPrediction.error) {
+      toast.error(anomalyPrediction.error)
+      return
+    }
+
+    const isThereAnomaly = anomalyPrediction.anomaly
+
+    if (isThereAnomaly) {
+      const anomalyDistance = (Math.random() * 100).toFixed(1)
+      setAnomalyState('detected')
+      setAnomalyMessage(
+        `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+      )
+      return
+    }
+    setAnomalyState('none')
+    setAnomalyMessage(`No anomaly detected, keep moving.`)
+  }, [anomalyPrediction.id])
+
   return (
     <>
       <form
         className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto"
-        action={predictAnomaly}
+        action={formAction}
       >
         <button
           ref={buttonRef}
@@ -264,13 +296,7 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             &deg;(N/S)
           </p>
         </div>
-        <button
-          className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] rounded cursor-pointer px-5 py-3 w-full mt-4 justify-center text-white"
-          type="submit"
-        >
-          <Image src={starsImg} alt="predict" className="w-6" />
-          predict
-        </button>
+        <PredictButton />
         {anomalyState !== 'idle' && (
           <>
             <div className="h-[2px] bg-[#E1E1E1] my-6" />
@@ -346,6 +372,23 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
         )}
       </AnimatePresence>
     </>
+  )
+}
+
+const PredictButton = function () {
+  const { pending } = useFormStatus()
+  return (
+    <button
+      disabled={pending}
+      className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] disabled:bg-[#D3D3D3] rounded cursor-pointer px-5 py-3 w-full mt-4 justify-center text-white"
+      type="submit"
+    >
+      <Image src={starsImg} alt="predict" className="w-6" />
+      predict
+      {pending && (
+        <LoadingSpinner radii={20} ringWidth={3} ringColor="#ffffff" />
+      )}
+    </button>
   )
 }
 
