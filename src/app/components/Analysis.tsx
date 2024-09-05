@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useReducer } from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -22,15 +22,48 @@ interface AnalysisProps {
   anomaly?: Anomaly
 }
 
+type ActionType =
+  | 'Accel_X'
+  | 'Accel_Y'
+  | 'Accel_Z'
+  | 'Anomaly'
+  | 'Gyro_X'
+  | 'Gyro_Y'
+  | 'Gyro_Z'
+  | 'Latitude'
+  | 'Longitude'
+  | 'Vibration'
+
+function reducer(
+  state: Anomaly | undefined,
+  action:
+    | { type: ActionType; payload: string }
+    | { type: 'reset-all'; payload: Anomaly }
+) {
+  if (action.type === 'reset-all') {
+    return action.payload
+  }
+  const anomaly = { ...state }
+
+  anomaly[action.type] = action.payload
+  return anomaly as Anomaly | undefined
+}
+
 function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const [anomalyMessage, setAnomalyMessage] = useState<string>('')
+  const [derivedAnomaly, dispatchAnomaly] = useReducer(reducer, anomaly!)
+
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (anomalyMessage === '') return
     buttonRef.current!.click()
   }, [anomalyMessage])
+
+  useEffect(() => {
+    dispatchAnomaly({ type: 'reset-all', payload: anomaly! })
+  }, [anomaly?.Latitude, anomaly?.Longitude])
 
   return (
     <>
@@ -81,7 +114,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Accel_X"
-              defaultValue={anomaly?.Accel_X}
+              value={derivedAnomaly?.Accel_X}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Accel_X', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -94,7 +130,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Accel_Y"
-              defaultValue={anomaly?.Accel_Y}
+              value={derivedAnomaly?.Accel_Y}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Accel_Y', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -107,7 +146,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Accel_Z"
-              defaultValue={anomaly?.Accel_Z}
+              value={derivedAnomaly?.Accel_Z}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Accel_Z', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -126,7 +168,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Gyro_X"
-              defaultValue={anomaly?.Gyro_X}
+              value={derivedAnomaly?.Gyro_X}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Gyro_X', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -139,7 +184,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Gyro_Y"
-              defaultValue={anomaly?.Gyro_Y}
+              value={derivedAnomaly?.Gyro_Y}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Gyro_Y', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -152,7 +200,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <input
               type="number"
               name="Gyro_Z"
-              defaultValue={anomaly?.Gyro_Z}
+              value={derivedAnomaly?.Gyro_Z}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Gyro_Z', payload: e.target.value })
+              }
               required
               className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
             />
@@ -166,7 +217,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
           <input
             type="number"
             name="Vibration"
-            defaultValue={anomaly?.Vibration}
+            value={derivedAnomaly?.Vibration}
+            onChange={e =>
+              dispatchAnomaly({ type: 'Vibration', payload: e.target.value })
+            }
             required
             className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
           />
@@ -181,7 +235,13 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
               <input
                 type="string"
                 name="Longitude"
-                defaultValue={`${anomaly?.Longitude}`}
+                value={`${derivedAnomaly?.Longitude}`}
+                onChange={e =>
+                  dispatchAnomaly({
+                    type: 'Longitude',
+                    payload: e.target.value,
+                  })
+                }
                 required
                 className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
               />
@@ -191,7 +251,10 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
               <input
                 type="string"
                 name="Latitude"
-                defaultValue={`${anomaly?.Latitude}`}
+                value={`${derivedAnomaly?.Latitude}`}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Latitude', payload: e.target.value })
+                }
                 required
                 className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
               />

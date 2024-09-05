@@ -21,16 +21,16 @@ const roboto = Roboto({
 })
 
 export interface Anomaly {
-  Accel_X: number
-  Accel_Y: number
-  Accel_Z: number
-  Anomaly: number
-  Gyro_X: number
-  Gyro_Y: number
-  Gyro_Z: number
-  Latitude: number
-  Longitude: number
-  Vibration: number
+  Accel_X: string
+  Accel_Y: string
+  Accel_Z: string
+  Anomaly: string
+  Gyro_X: string
+  Gyro_Y: string
+  Gyro_Z: string
+  Latitude: string
+  Longitude: string
+  Vibration: string
   _id: string
 }
 
@@ -42,7 +42,19 @@ export default function MapWrapper() {
     longitude: number
   }>({ latitude: 0, longitude: 0 })
   const [anomalyData, setAnomalyData] = useState<Anomaly[]>([])
-  const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>()
+  const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>({
+    Accel_X: '',
+    Accel_Y: '',
+    Accel_Z: '',
+    Anomaly: '',
+    Gyro_X: '',
+    Gyro_Y: '',
+    Gyro_Z: '',
+    Latitude: '',
+    Longitude: '',
+    Vibration: '',
+    _id: '',
+  })
 
   useEffect(() => {
     getAnomalyTable().then(res => {
@@ -96,8 +108,8 @@ export default function MapWrapper() {
           {!!anomalyData.length && (
             <Map
               initialViewState={{
-                latitude: anomalyData[0].Latitude,
-                longitude: anomalyData[0].Longitude,
+                latitude: +anomalyData[0].Latitude,
+                longitude: +anomalyData[0].Longitude,
                 zoom: 14,
               }}
               style={{ width: '100%', height: '100%' }}
@@ -117,15 +129,15 @@ export default function MapWrapper() {
             >
               {anomalyData.map(anomaly => (
                 <Marker
-                  longitude={anomaly.Longitude}
-                  latitude={anomaly.Latitude}
+                  longitude={+anomaly.Longitude}
+                  latitude={+anomaly.Latitude}
                   key={anomaly._id}
                   color="red"
                   onClick={() => {
                     setSelectedAnomaly(anomaly)
                     setUserLocation({
-                      latitude: anomaly.Latitude,
-                      longitude: anomaly.Longitude,
+                      latitude: +anomaly.Latitude,
+                      longitude: +anomaly.Longitude,
                     })
                   }}
                 />
