@@ -59,7 +59,7 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
 
   const [state, formAction] = useFormState(
     predictAnomaly,
-    JSON.stringify({ id: 0 })
+    JSON.stringify({ id: -1 })
   )
 
   console.log('state:', state)
@@ -77,7 +77,7 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
 
   const anomalyPrediction = JSON.parse(state)
   useEffect(() => {
-    if (!anomalyPrediction.anomaly && !anomalyPrediction.error) return
+    if (anomalyPrediction.id === -1) return
     if (anomalyPrediction.error) {
       toast.error(anomalyPrediction.error)
       return
@@ -86,15 +86,17 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
     const isThereAnomaly = anomalyPrediction.anomaly
 
     if (isThereAnomaly) {
+      console.log('this worked')
       const anomalyDistance = (Math.random() * 100).toFixed(1)
       setAnomalyState('detected')
       setAnomalyMessage(
-        `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+        `There's an upcoming road anomaly ${anomalyDistance}km away from you.#!${Math.random()}` //do this to ensure messages are always unique and voice is triggered on each prediction
       )
       return
     }
+
     setAnomalyState('none')
-    setAnomalyMessage(`No anomaly detected, keep moving.`)
+    setAnomalyMessage(`No anomaly detected, keep moving.#!${Math.random()}`)
   }, [anomalyPrediction.id])
 
   return (
@@ -109,7 +111,9 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
           type="button"
           onClick={() => {
             if (isVoiceMuted) return
-            const msg = new SpeechSynthesisUtterance(anomalyMessage)
+            const msg = new SpeechSynthesisUtterance(
+              anomalyMessage.split('#!')[0]
+            )
 
             msg.pitch = 1.0 // Normal pitch for a balanced tone
             msg.rate = 0.95 // Slightly slower rate to mimic natural speech
@@ -297,7 +301,7 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
           </p>
         </div>
         <PredictButton />
-        {anomalyState !== 'idle' && (
+        {anomalyState !== 'idle' && anomalyMessage !== '' && (
           <>
             <div className="h-[2px] bg-[#E1E1E1] my-6" />
             <div>
@@ -365,7 +369,7 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
                 <Image src={redRoad} alt="red road" />
               </div>
               <p className="capitalize font-semibold text-lg max-w-[290px]">
-                {anomalyMessage}
+                {anomalyMessage.split('#!')[0]}
               </p>
             </div>
           </motion.div>
