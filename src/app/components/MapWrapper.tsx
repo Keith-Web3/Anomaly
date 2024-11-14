@@ -104,7 +104,7 @@ export default function MapWrapper() {
             satellite
           </button>
         </div>
-        <div className="grid min-h-screen h-full">
+        <div className="grid h-screen sticky top-0">
           {!!anomalyData.length && (
             <Map
               initialViewState={{

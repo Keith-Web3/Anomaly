@@ -101,254 +101,273 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
 
   return (
     <>
-      <form
-        className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max col-start-1 col-end-2 row-start-1 z-[1] h-max ml-4 my-auto"
-        action={formAction}
-      >
-        <button
-          ref={buttonRef}
-          className="hidden"
-          type="button"
-          onClick={() => {
-            if (isVoiceMuted) return
-            const msg = new SpeechSynthesisUtterance(
-              anomalyMessage.split('#!')[0]
-            )
-
-            msg.pitch = 1.0 // Normal pitch for a balanced tone
-            msg.rate = 0.95 // Slightly slower rate to mimic natural speech
-            msg.volume = 0.9 // Slightly lower volume for a softer, more natural sound
-            msg.lang = 'en-US' // English language (US)
-
-            const voices = window.speechSynthesis.getVoices()
-            msg.voice =
-              voices.find(
-                voice =>
-                  voice.name.includes('English') &&
-                  voice.name.includes('Female')
-              ) || voices[0]
-
-            speechSynthesis.cancel()
-            speechSynthesis.speak(msg)
-            console.log('read message')
-          }}
+      <div className="col-start-1 col-end-2 row-start-1 py-8 relative z-[1]">
+        <form
+          className="p-6 rounded-3xl shadow-[0_0_60px_#0000001A] bg-white w-max z-[1] h-max ml-4 my-auto"
+          action={formAction}
         >
-          hello world
-        </button>
-        <h1 className="text-2xl text-black font-medium">
-          Prediction and Analysis
-        </h1>
-        <p className="capitalize mt-6 text-[#262626] font-medium mb-1">
-          acceleration
-        </p>
-        <div className="flex items-center gap-4">
-          <label
-            htmlFor="Accel_X"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            x-axis
-            <input
-              type="number"
-              name="Accel_X"
-              value={derivedAnomaly?.Accel_X}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Accel_X', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <label
-            htmlFor="Accel_Y"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            y-axis
-            <input
-              type="number"
-              name="Accel_Y"
-              value={derivedAnomaly?.Accel_Y}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Accel_Y', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <label
-            htmlFor="Accel_Z"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            z-axis
-            <input
-              type="number"
-              name="Accel_Z"
-              value={derivedAnomaly?.Accel_Z}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Accel_Z', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
-            m/s<sup>2</sup>
-          </p>
-        </div>
-        <p className="mt-4 text-[#262626] font-medium mb-1">Angular velocity</p>
-        <div className="flex items-center gap-4">
-          <label
-            htmlFor="Gyro_X"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            x-axis
-            <input
-              type="number"
-              name="Gyro_X"
-              value={derivedAnomaly?.Gyro_X}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Gyro_X', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <label
-            htmlFor="Gyro_Y"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            y-axis
-            <input
-              type="number"
-              name="Gyro_Y"
-              value={derivedAnomaly?.Gyro_Y}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Gyro_Y', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <label
-            htmlFor="Gyro_Z"
-            className="text-[#686868] text-sm flex flex-col items-start gap-2"
-          >
-            z-axis
-            <input
-              type="number"
-              name="Gyro_Z"
-              value={derivedAnomaly?.Gyro_Z}
-              onChange={e =>
-                dispatchAnomaly({ type: 'Gyro_Z', payload: e.target.value })
-              }
-              required
-              className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
-            />
-          </label>
-          <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
-            rad/s
-          </p>
-        </div>
-        <p className="mt-4 text-[#262626] font-medium mb-1">Vibration</p>
-        <div className="flex items-center gap-4">
-          <input
-            type="number"
-            name="Vibration"
-            value={derivedAnomaly?.Vibration}
-            onChange={e =>
-              dispatchAnomaly({ type: 'Vibration', payload: e.target.value })
-            }
-            required
-            className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
-          />
-          <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
-            -
-          </p>
-        </div>
-        <div className="flex items-center gap-4 mt-4">
-          <div className="flex items-center gap-2">
-            <div>
-              <p className="mt-4 text-[#262626] font-medium mb-1">Longitude</p>
-              <input
-                type="string"
-                name="Longitude"
-                value={`${derivedAnomaly?.Longitude}`}
-                onChange={e =>
-                  dispatchAnomaly({
-                    type: 'Longitude',
-                    payload: e.target.value,
-                  })
-                }
-                required
-                className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-              />
-            </div>
-            <div>
-              <p className="mt-4 text-[#262626] font-medium mb-1">Latitude</p>
-              <input
-                type="string"
-                name="Latitude"
-                value={`${derivedAnomaly?.Latitude}`}
-                onChange={e =>
-                  dispatchAnomaly({ type: 'Latitude', payload: e.target.value })
-                }
-                required
-                className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-              />
-            </div>
-          </div>
-          <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
-            &deg;(N/S)
-          </p>
-        </div>
-        <PredictButton />
-        {anomalyState !== 'idle' && anomalyMessage !== '' && (
-          <>
-            <div className="h-[2px] bg-[#E1E1E1] my-6" />
-            <div>
-              <p className="capitalize text-[#262626] text-lg mb-2">result</p>
-              {anomalyState === 'detected' ? (
-                <div className="text-white bg-[#D91515] p-4 rounded-lg">
-                  <Image src={whiteRoad} alt="road" className="mx-auto w-10" />
-                  <p className="font-medium text-center mt-4 text-lg">
-                    Anomaly detected!
-                  </p>
-                  <p className="text-center text-sm opacity-90">
-                    Keep your heads up
-                  </p>
-                </div>
-              ) : (
-                <div className="text-white bg-[#11940E] p-4 rounded-lg">
-                  <Image src={whiteRoad} alt="road" className="mx-auto w-10" />
-                  <p className="font-medium text-center mt-4 text-lg">
-                    No anomaly detected!
-                  </p>
-                  <p className="text-center text-sm opacity-90">Keep moving</p>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-        <button
-          className="bg-[#831DD3] cursor-pointer fixed inset-[auto_50%_1em_auto] translate-x-1/2 border-none outline-none text-white px-5 py-3 rounded capitalize"
-          type="button"
-          onClick={() => {
-            const isThereAnomaly = Math.random() >= 0.5
-
-            if (isThereAnomaly) {
-              const anomalyDistance = (Math.random() * 100).toFixed(1)
-              setAnomalyState('detected')
-              setAnomalyMessage(
-                `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+          <button
+            ref={buttonRef}
+            className="hidden"
+            type="button"
+            onClick={() => {
+              if (isVoiceMuted) return
+              const msg = new SpeechSynthesisUtterance(
+                anomalyMessage.split('#!')[0]
               )
-              return
-            }
-            setAnomalyState('none')
-            setAnomalyMessage(`No anomaly detected, keep moving.`)
-          }}
-        >
-          simulate anomaly
-        </button>
-      </form>
+
+              msg.pitch = 1.0 // Normal pitch for a balanced tone
+              msg.rate = 0.95 // Slightly slower rate to mimic natural speech
+              msg.volume = 0.9 // Slightly lower volume for a softer, more natural sound
+              msg.lang = 'en-US' // English language (US)
+
+              const voices = window.speechSynthesis.getVoices()
+              msg.voice =
+                voices.find(
+                  voice =>
+                    voice.name.includes('English') &&
+                    voice.name.includes('Female')
+                ) || voices[0]
+
+              speechSynthesis.cancel()
+              speechSynthesis.speak(msg)
+              console.log('read message')
+            }}
+          >
+            hello world
+          </button>
+          <h1 className="text-2xl text-black font-medium">
+            Prediction and Analysis
+          </h1>
+          <p className="capitalize mt-6 text-[#262626] font-medium mb-1">
+            acceleration
+          </p>
+          <div className="flex items-center gap-4">
+            <label
+              htmlFor="Accel_X"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              x-axis
+              <input
+                type="number"
+                name="Accel_X"
+                value={derivedAnomaly?.Accel_X}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Accel_X', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <label
+              htmlFor="Accel_Y"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              y-axis
+              <input
+                type="number"
+                name="Accel_Y"
+                value={derivedAnomaly?.Accel_Y}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Accel_Y', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <label
+              htmlFor="Accel_Z"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              z-axis
+              <input
+                type="number"
+                name="Accel_Z"
+                value={derivedAnomaly?.Accel_Z}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Accel_Z', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
+              m/s<sup>2</sup>
+            </p>
+          </div>
+          <p className="mt-4 text-[#262626] font-medium mb-1">
+            Angular velocity
+          </p>
+          <div className="flex items-center gap-4">
+            <label
+              htmlFor="Gyro_X"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              x-axis
+              <input
+                type="number"
+                name="Gyro_X"
+                value={derivedAnomaly?.Gyro_X}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Gyro_X', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <label
+              htmlFor="Gyro_Y"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              y-axis
+              <input
+                type="number"
+                name="Gyro_Y"
+                value={derivedAnomaly?.Gyro_Y}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Gyro_Y', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <label
+              htmlFor="Gyro_Z"
+              className="text-[#686868] text-sm flex flex-col items-start gap-2"
+            >
+              z-axis
+              <input
+                type="number"
+                name="Gyro_Z"
+                value={derivedAnomaly?.Gyro_Z}
+                onChange={e =>
+                  dispatchAnomaly({ type: 'Gyro_Z', payload: e.target.value })
+                }
+                required
+                className="border border-[#F1F1F1] rounded px-3 py-3 text-black w-[75px] outline-none"
+              />
+            </label>
+            <p className="text-[#222222] bg-[#EFEFEF] rounded px-4 py-[0.7em] self-end w-full text-center">
+              rad/s
+            </p>
+          </div>
+          <p className="mt-4 text-[#262626] font-medium mb-1">Vibration</p>
+          <div className="flex items-center gap-4">
+            <input
+              type="number"
+              name="Vibration"
+              value={derivedAnomaly?.Vibration}
+              onChange={e =>
+                dispatchAnomaly({ type: 'Vibration', payload: e.target.value })
+              }
+              required
+              className="border border-[#F1F1F1] rounded px-5 py-3 w-[calc(75px + 1em)] text-black outline-none"
+            />
+            <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+              -
+            </p>
+          </div>
+          <div className="flex items-center gap-4 mt-4">
+            <div className="flex items-center gap-2">
+              <div>
+                <p className="mt-4 text-[#262626] font-medium mb-1">
+                  Longitude
+                </p>
+                <input
+                  type="string"
+                  name="Longitude"
+                  value={`${derivedAnomaly?.Longitude}`}
+                  onChange={e =>
+                    dispatchAnomaly({
+                      type: 'Longitude',
+                      payload: e.target.value,
+                    })
+                  }
+                  required
+                  className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                />
+              </div>
+              <div>
+                <p className="mt-4 text-[#262626] font-medium mb-1">Latitude</p>
+                <input
+                  type="string"
+                  name="Latitude"
+                  value={`${derivedAnomaly?.Latitude}`}
+                  onChange={e =>
+                    dispatchAnomaly({
+                      type: 'Latitude',
+                      payload: e.target.value,
+                    })
+                  }
+                  required
+                  className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                />
+              </div>
+            </div>
+            <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+              &deg;(N/S)
+            </p>
+          </div>
+          <PredictButton />
+          {anomalyState !== 'idle' && anomalyMessage !== '' && (
+            <>
+              <div className="h-[2px] bg-[#E1E1E1] my-6" />
+              <div>
+                <p className="capitalize text-[#262626] text-lg mb-2">result</p>
+                {anomalyState === 'detected' ? (
+                  <div className="text-white bg-[#D91515] p-4 rounded-lg">
+                    <Image
+                      src={whiteRoad}
+                      alt="road"
+                      className="mx-auto w-10"
+                    />
+                    <p className="font-medium text-center mt-4 text-lg">
+                      Anomaly detected!
+                    </p>
+                    <p className="text-center text-sm opacity-90">
+                      Keep your heads up
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-white bg-[#11940E] p-4 rounded-lg">
+                    <Image
+                      src={whiteRoad}
+                      alt="road"
+                      className="mx-auto w-10"
+                    />
+                    <p className="font-medium text-center mt-4 text-lg">
+                      No anomaly detected!
+                    </p>
+                    <p className="text-center text-sm opacity-90">
+                      Keep moving
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+          <button
+            className="bg-[#831DD3] cursor-pointer fixed inset-[auto_50%_1em_auto] translate-x-1/2 border-none outline-none text-white px-5 py-3 rounded capitalize"
+            type="button"
+            onClick={() => {
+              const isThereAnomaly = Math.random() >= 0.5
+
+              if (isThereAnomaly) {
+                const anomalyDistance = (Math.random() * 100).toFixed(1)
+                setAnomalyState('detected')
+                setAnomalyMessage(
+                  `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+                )
+                return
+              }
+              setAnomalyState('none')
+              setAnomalyMessage(`No anomaly detected, keep moving.`)
+            }}
+          >
+            simulate anomaly
+          </button>
+        </form>
+      </div>
       <AnimatePresence>
         {anomalyMessage !== '' && (
           <motion.div
