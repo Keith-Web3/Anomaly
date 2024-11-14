@@ -132,7 +132,7 @@ export default function MapWrapper() {
                   longitude={+anomaly.Longitude}
                   latitude={+anomaly.Latitude}
                   key={anomaly._id}
-                  color="red"
+                  color={anomaly.Anomaly === 'None' ? 'green' : 'red'}
                   onClick={() => {
                     setSelectedAnomaly(anomaly)
                     setUserLocation({
