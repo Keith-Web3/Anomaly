@@ -62,8 +62,6 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
     JSON.stringify({ id: -1 })
   )
 
-  console.log('state:', state)
-
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {

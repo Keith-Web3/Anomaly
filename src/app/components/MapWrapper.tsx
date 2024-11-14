@@ -9,10 +9,11 @@ import toast from 'react-hot-toast'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
 import volume from '@/assets/volume.svg'
+import cancel from '@/assets/cancel.svg'
 import volumeMuted from '@/assets/volume_muted.svg'
 
 import Analysis from './Analysis'
-import { getAnomalyTable } from '@/actions'
+import { getAnomalyTable, getUserLocation } from '@/actions'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
@@ -31,16 +32,19 @@ export interface Anomaly {
   Latitude: string
   Longitude: string
   Vibration: string
+  Speed: number
   _id: string
 }
 
 export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
   const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false)
+  const [isMapInfoShown, setIsMapInfoShown] = useState<boolean>(false)
   const [userLocation, setUserLocation] = useState<{
     latitude: number
     longitude: number
   }>({ latitude: 0, longitude: 0 })
+  const [locationString, setLocationString] = useState<string | null>(null)
   const [anomalyData, setAnomalyData] = useState<Anomaly[]>([])
   const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>({
     Accel_X: '',
@@ -53,6 +57,7 @@ export default function MapWrapper() {
     Latitude: '',
     Longitude: '',
     Vibration: '',
+    Speed: 0,
     _id: '',
   })
 
@@ -66,8 +71,52 @@ export default function MapWrapper() {
     })
   }, [])
 
+  useEffect(() => {
+    ;(async () => {
+      const location = await getUserLocation(
+        userLocation.longitude,
+        userLocation.latitude
+      )
+      setLocationString(location)
+    })()
+  }, [userLocation.latitude, userLocation.longitude])
+
   return (
     <>
+      {isMapInfoShown && (
+        <div
+          onClick={() => setIsMapInfoShown(false)}
+          className="fixed z-20 inset-0 cursor-pointer bg-black/70 grid"
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="m-auto min-w-[300px] cursor-auto w-max rounded-lg bg-white shadow-md p-6"
+          >
+            <Image
+              src={cancel}
+              alt="cancel"
+              className="w-4 mb-2 h-4 cursor-pointer ml-auto"
+              onClick={() => setIsMapInfoShown(false)}
+            />
+            <p className="text-[#262626] mb-2">
+              <span className="text-[#686868] text-sm">Speed:</span>{' '}
+              {selectedAnomaly.Speed}
+            </p>
+            <p className="text-[#262626] mb-2">
+              <span className="text-[#686868] text-sm">Type:</span>{' '}
+              {selectedAnomaly.Anomaly ?? 'Pothole'}
+            </p>
+            <p className="text-[#262626] mb-2">
+              <span className="text-[#686868] text-sm">Location:</span>{' '}
+              {locationString ?? 'Loading Location....'}
+            </p>
+            <p className="text-[#262626]">
+              <span className="text-[#686868] text-sm">Time:</span>{' '}
+              {getCurrentTime()}
+            </p>
+          </div>
+        </div>
+      )}
       <div className="col-start-1 col-end-3 row-start-1">
         <button
           className="w-14 h-14 rounded-full bg-white grid place-content-center fixed inset-[50%_1em_auto_auto] translate-y-[-50%] z-[1] shadow-[0_0_69px_#00000029]"
@@ -136,10 +185,12 @@ export default function MapWrapper() {
                   color={anomaly.Anomaly === 'None' ? 'green' : 'red'}
                   onClick={() => {
                     setSelectedAnomaly(anomaly)
+                    console.log(anomaly)
                     setUserLocation({
                       latitude: +anomaly.Latitude,
                       longitude: +anomaly.Longitude,
                     })
+                    setIsMapInfoShown(true)
                   }}
                 />
               ))}
@@ -154,4 +205,20 @@ export default function MapWrapper() {
       />
     </>
   )
+}
+
+function getCurrentTime() {
+  const now = new Date()
+
+  // Options for a human-readable date format
+  const options = {
+    year: 'numeric', // e.g., "2024"
+    month: 'long', // e.g., "November"
+    day: 'numeric', // e.g., "14"
+    hour: 'numeric', // e.g., "3"
+    minute: '2-digit', // e.g., "45"
+    hour12: true, // 12-hour format with AM/PM
+  }
+
+  return now.toLocaleString('en-US', options as Intl.DateTimeFormatOptions)
 }
