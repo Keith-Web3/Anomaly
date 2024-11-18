@@ -404,67 +404,17 @@ function Analysis({
               className="bg-white p-8 cursor-auto rounded-lg m-auto max-w-120"
             >
               <p className="mb-2 font-semibold text-black">From:</p>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <div>
-                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
-                      Longitude
-                    </p>
-                    <input
-                      type="string"
-                      name="from_longitude"
-                      defaultValue={userLocation.longitude}
-                      required
-                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
-                      Latitude
-                    </p>
-                    <input
-                      type="string"
-                      name="from_latitude"
-                      defaultValue={userLocation.latitude}
-                      required
-                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-                    />
-                  </div>
-                </div>
-                <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
-                  &deg;(N/S)
-                </p>
-              </div>
+              <input
+                name="from"
+                placeholder="Enter state name"
+                className="border border-[#F1F1F1] rounded px-5 py-3 text-black outline-none w-full"
+              />
               <p className="mt-4 font-semibold text-black">To:</p>
-              <div className="flex items-center gap-4 mt-2">
-                <div className="flex items-center gap-2">
-                  <div>
-                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
-                      Longitude
-                    </p>
-                    <input
-                      type="string"
-                      name="to_longitude"
-                      required
-                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
-                      Latitude
-                    </p>
-                    <input
-                      type="string"
-                      name="to_latitude"
-                      required
-                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
-                    />
-                  </div>
-                </div>
-                <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
-                  &deg;(N/S)
-                </p>
-              </div>
+              <input
+                name="from"
+                placeholder="Enter state name"
+                className="border border-[#F1F1F1] rounded px-5 py-3 text-black outline-none w-full"
+              />
               <SubmitPathButton />
             </form>
           </div>

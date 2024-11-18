@@ -71,14 +71,20 @@ export const predictAnomaly = async function (
 }
 
 export const getRoute = async function (initialState: string, data: FormData) {
-  const fromLatitude = data.get('from_latitude') as string
-  const fromLongitude = data.get('from_longitude') as string
-  const toLatitude = data.get('to_latitude') as string
-  const toLongitude = data.get('to_longitude') as string
+  const from = data.get('from') as string
+  const to = data.get('to') as string
+
+  const locationData = await Promise.all([
+    fetch(`${BASE_URL}/api/nigeria/nigeria/states/${from}`),
+    fetch(`${BASE_URL}/api/nigeria/nigeria/states/${to}`),
+  ])
+  const [fromLocation, toLocation] = await Promise.all(
+    locationData.map(res => res.json())
+  )
 
   try {
     const res = await fetch(
-      `https://api.mapbox.com/directions/v5/mapbox/driving/${fromLongitude},${fromLatitude};${toLongitude},${toLatitude}?geometries=geojson&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${fromLocation.longitude},${fromLocation.latitude};${toLocation.longitude},${toLocation.latitude}?geometries=geojson&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
     )
 
     if (!res.ok) throw new Error('Error fetching route')
@@ -87,7 +93,10 @@ export const getRoute = async function (initialState: string, data: FormData) {
     return JSON.stringify({
       success: true,
       data: data.routes[0].geometry,
-      from: { fromLatitude, fromLongitude },
+      from: {
+        fromLatitude: fromLocation.latitude,
+        longitude: fromLocation.longitude,
+      },
     })
   } catch (_err) {
     return JSON.stringify({ error: 'Error fetching route' })
