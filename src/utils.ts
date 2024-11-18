@@ -58,18 +58,18 @@ function trimAndSampleArray<K>(data: K[]) {
   let trimmedData = data.slice(-1000)
 
   // If the array has 20 or fewer items, return all of them
-  if (trimmedData.length <= 20) {
+  if (trimmedData.length <= 30) {
     return trimmedData
   }
 
   // Otherwise, calculate the step size to distribute 20 items evenly
   const totalItems = trimmedData.length
-  const step = totalItems / 20 // Allow fractional steps for better distribution
+  const step = totalItems / 30 // Allow fractional steps for better distribution
 
   // Collect 20 evenly distributed items
   const result = []
   trimmedData = trimmedData.reverse()
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 30; i++) {
     result.push(trimmedData[Math.floor(i * step)])
   }
 
