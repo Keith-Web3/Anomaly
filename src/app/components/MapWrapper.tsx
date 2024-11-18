@@ -1,10 +1,9 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Map, { Layer, Marker, Source } from 'react-map-gl'
 import { twMerge } from 'tailwind-merge'
 import { Roboto } from 'next/font/google'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './mapWrapper.css'
@@ -160,9 +159,21 @@ export default function MapWrapper() {
         <div className="grid h-screen sticky top-0">
           {!!anomalyData?.length && isSuccess && (
             <Map
+              key={`${
+                anomalyData[0].Latitude +
+                (JSON.parse(state)?.from?.fromLatitude || 0)
+              }${
+                anomalyData[0].Longitude +
+                (JSON.parse(state)?.from?.fromLongitude || 0)
+              }`}
               initialViewState={{
-                latitude: +anomalyData[0].Latitude,
-                longitude: +anomalyData[0].Longitude,
+                latitude: showAnomalies
+                  ? +anomalyData[0].Latitude
+                  : +(JSON.parse(state)?.from?.fromLatitude || 0),
+                longitude: showAnomalies
+                  ? +anomalyData[0].Longitude
+                  : +(JSON.parse(state)?.from?.fromLongitude || 0),
+
                 zoom: 14,
               }}
               style={{ width: '100%', height: '100%' }}

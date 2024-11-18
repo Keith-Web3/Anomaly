@@ -84,7 +84,11 @@ export const getRoute = async function (initialState: string, data: FormData) {
     if (!res.ok) throw new Error('Error fetching route')
     const data = await res.json()
     console.log(data.routes[0].geometry)
-    return JSON.stringify({ success: true, data: data.routes[0].geometry })
+    return JSON.stringify({
+      success: true,
+      data: data.routes[0].geometry,
+      from: { fromLatitude, fromLongitude },
+    })
   } catch (_err) {
     return JSON.stringify({ error: 'Error fetching route' })
   }
