@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Map, { Layer, Marker, Source } from 'react-map-gl'
 import { twMerge } from 'tailwind-merge'
 import { Roboto } from 'next/font/google'
@@ -16,6 +16,7 @@ import { getAnomalyTable, getUserLocation } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
 import { useFormState } from 'react-dom'
 import { getRoute } from '@/actions'
+import toast from 'react-hot-toast'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
@@ -42,6 +43,7 @@ export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
   const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false)
   const [isMapInfoShown, setIsMapInfoShown] = useState<boolean>(false)
+  const [isPredictShown, setIsPredictShown] = useState<boolean>(false)
   const [state, formAction] = useFormState(
     getRoute,
     JSON.stringify({ id: -1 }) // redundant
@@ -79,6 +81,17 @@ export default function MapWrapper() {
     queryFn: () =>
       getUserLocation(userLocation.longitude, userLocation.latitude),
   })
+
+  useEffect(() => {
+    console.log(
+      JSON.parse(state)?.from?.fromLatitude,
+      JSON.parse(state)?.from?.fromLongitude
+    )
+    if (JSON.parse(state).success) {
+      setShowAnomalies(false)
+      toast.success('Route generated successfully')
+    }
+  }, [JSON.parse(state).id])
 
   return (
     <>
@@ -160,19 +173,21 @@ export default function MapWrapper() {
           {!!anomalyData?.length && isSuccess && (
             <Map
               key={`${
+                showAnomalies +
                 anomalyData[0].Latitude +
-                (JSON.parse(state)?.from?.fromLatitude || 0)
+                (JSON.parse(state)?.from?.fromLatitude || -1)
               }${
+                showAnomalies +
                 anomalyData[0].Longitude +
-                (JSON.parse(state)?.from?.fromLongitude || 0)
+                (JSON.parse(state)?.from?.fromLongitude || -1)
               }`}
               initialViewState={{
                 latitude: showAnomalies
                   ? +anomalyData[0].Latitude
-                  : +(JSON.parse(state)?.from?.fromLatitude || 0),
+                  : +(JSON.parse(state)?.from?.fromLatitude || -1),
                 longitude: showAnomalies
                   ? +anomalyData[0].Longitude
-                  : +(JSON.parse(state)?.from?.fromLongitude || 0),
+                  : +(JSON.parse(state)?.from?.fromLongitude || -1),
 
                 zoom: 14,
               }}
@@ -232,14 +247,16 @@ export default function MapWrapper() {
           )}
         </div>
       </div>
-      <Analysis
-        showAnomalies={showAnomalies}
-        setShowAnomalies={setShowAnomalies}
-        userLocation={userLocation}
-        isVoiceMuted={isVoiceMuted}
-        pathAction={formAction}
-        anomaly={selectedAnomaly}
-      />
+      {
+        <Analysis
+          showAnomalies={showAnomalies}
+          setShowAnomalies={setShowAnomalies}
+          userLocation={userLocation}
+          isVoiceMuted={isVoiceMuted}
+          pathAction={formAction}
+          anomaly={selectedAnomaly}
+        />
+      }
     </>
   )
 }

@@ -22,6 +22,7 @@ import { predictAnomaly } from '@/actions'
 import LoadingSpinner from './LoadingSpinner'
 import toast from 'react-hot-toast'
 import Chart from './LineChart'
+import { XIcon } from 'lucide-react'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
@@ -403,6 +404,12 @@ function Analysis({
               action={pathAction}
               className="bg-white p-8 cursor-auto rounded-lg m-auto max-w-120"
             >
+              <XIcon
+                onClick={() => {
+                  setIsPathFormShown(false)
+                }}
+                className="ml-auto cursor-pointer"
+              />
               <p className="mb-2 font-semibold text-black">From:</p>
               <input
                 name="from"
@@ -411,7 +418,7 @@ function Analysis({
               />
               <p className="mt-4 font-semibold text-black">To:</p>
               <input
-                name="from"
+                name="to"
                 placeholder="Enter state name"
                 className="border border-[#F1F1F1] rounded px-5 py-3 text-black outline-none w-full"
               />

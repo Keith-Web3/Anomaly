@@ -71,8 +71,8 @@ export const predictAnomaly = async function (
 }
 
 export const getRoute = async function (initialState: string, data: FormData) {
-  const from = data.get('from') as string
-  const to = data.get('to') as string
+  const from = (data.get('from') as string).trim().toLowerCase()
+  const to = (data.get('to') as string).trim().toLowerCase()
 
   const locationData = await Promise.all([
     fetch(`${BASE_URL}/api/nigeria/nigeria/states/${from}`),
@@ -93,12 +93,13 @@ export const getRoute = async function (initialState: string, data: FormData) {
     return JSON.stringify({
       success: true,
       data: data.routes[0].geometry,
+      id: Math.random(),
       from: {
         fromLatitude: fromLocation.latitude,
-        longitude: fromLocation.longitude,
+        fromLongitude: fromLocation.longitude,
       },
     })
   } catch (_err) {
-    return JSON.stringify({ error: 'Error fetching route' })
+    return JSON.stringify({ error: 'Error fetching route', id: Math.random() })
   }
 }
