@@ -1,7 +1,8 @@
 'use client'
 
-import { TrendingUp } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
+import { TrendingUp, TrendingDown } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -17,28 +18,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-const chartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 73 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
-]
+import { getGraphData } from '@/utils'
 
 const chartConfig = {
   desktop: {
-    label: 'Desktop',
+    label: 'Distance',
     color: 'hsl(var(--chart-1))',
+  },
+  time: {
+    label: 'Time',
+    color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig
 
 export default function Chart() {
+  const { data, isSuccess } = useQuery({
+    queryKey: ['chartData'],
+    queryFn: getGraphData,
+  })
+
+  const chartData =
+    data?.graphData.map(item => ({
+      distance: item.distance,
+      time: item.time,
+    })) ?? []
+
   return (
     <Card className="w-3/5 m-auto" onClick={e => e.stopPropagation()}>
       <CardHeader>
-        <CardTitle>Line Chart - Linear</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Distance / Time Graph</CardTitle>
+        <CardDescription>
+          {data?.from} - {data?.to}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -52,18 +63,32 @@ export default function Chart() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="time"
               tickLine={false}
               axisLine={false}
+              interval={5}
               tickMargin={8}
-              tickFormatter={value => value.slice(0, 3)}
+              tickFormatter={value => {
+                const date = new Date(value)
+
+                const options = {
+                  month: 'short', // Abbreviated month
+                  day: 'numeric', // Day of the month
+                  hour: '2-digit', // Hour
+                  minute: '2-digit', // Minute
+                } satisfies Intl.DateTimeFormatOptions
+
+                const formattedDate = date.toLocaleString('en-US', options)
+
+                return formattedDate
+              }}
             />
             <ChartTooltip
-              cursor={false}
+              // cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="distance"
               type="linear"
               stroke="var(--color-desktop)"
               strokeWidth={2}
@@ -74,10 +99,16 @@ export default function Chart() {
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Trending {(data?.change || 0) > 0 ? 'up' : 'down'} by{' '}
+          {Math.abs(data?.change || 0).toFixed(1)}%{' '}
+          {(data?.change || 0) > 0 ? (
+            <TrendingUp className="h-4 w-4" />
+          ) : (
+            <TrendingDown className="h-4 w-4" />
+          )}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing distance-time graph from the last 1000 data points
         </div>
       </CardFooter>
     </Card>

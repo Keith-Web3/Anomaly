@@ -15,13 +15,19 @@ export async function getUserLocation(lng: number, lat: number) {
 export async function getGraphData() {
   const res = await fetch(`${BASE_URL}/api/distance-time/graph`)
 
-  if (!res.ok) {
-    return { error: 'Something went wrong, please reload.' }
-  }
-
   const data = await res.json()
 
-  return data.data
+  const graphData: { time: string; distance: number }[] = data.data
+  const latestData = trimAndSampleArray(graphData)
+  const from = formatDate(latestData[0].time)
+  const to = formatDate(latestData[latestData.length - 1].time)
+
+  const change =
+    ((latestData[latestData.length - 1].distance - latestData[0].distance) /
+      latestData[0].distance) *
+    100
+
+  return { graphData: latestData, from, to, change }
 }
 
 export const getAnomalyTable = async function () {
@@ -30,4 +36,42 @@ export const getAnomalyTable = async function () {
   const data = await res.json()
 
   return data.data
+}
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString)
+
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true, // Ensures AM/PM format
+  } satisfies Intl.DateTimeFormatOptions
+
+  return new Intl.DateTimeFormat('en-US', options).format(date)
+}
+
+function trimAndSampleArray<K>(data: K[]) {
+  // Trim the array to the last 200 items
+  let trimmedData = data.slice(-1000)
+
+  // If the array has 20 or fewer items, return all of them
+  if (trimmedData.length <= 20) {
+    return trimmedData
+  }
+
+  // Otherwise, calculate the step size to distribute 20 items evenly
+  const totalItems = trimmedData.length
+  const step = totalItems / 20 // Allow fractional steps for better distribution
+
+  // Collect 20 evenly distributed items
+  const result = []
+  trimmedData = trimmedData.reverse()
+  for (let i = 0; i < 20; i++) {
+    result.push(trimmedData[Math.floor(i * step)])
+  }
+
+  return result.reverse()
 }
