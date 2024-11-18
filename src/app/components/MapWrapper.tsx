@@ -13,7 +13,8 @@ import cancel from '@/assets/cancel.svg'
 import volumeMuted from '@/assets/volume_muted.svg'
 
 import Analysis from './Analysis'
-import { getAnomalyTable, getUserLocation } from '@/actions'
+import { getAnomalyTable, getUserLocation } from '@/utils'
+import { useQuery } from '@tanstack/react-query'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
@@ -44,8 +45,6 @@ export default function MapWrapper() {
     latitude: number
     longitude: number
   }>({ latitude: 0, longitude: 0 })
-  const [locationString, setLocationString] = useState<string | null>(null)
-  const [anomalyData, setAnomalyData] = useState<Anomaly[]>([])
   const [selectedAnomaly, setSelectedAnomaly] = useState<Anomaly>({
     Accel_X: '',
     Accel_Y: '',
@@ -61,25 +60,21 @@ export default function MapWrapper() {
     _id: '',
   })
 
-  useEffect(() => {
-    getAnomalyTable().then(res => {
-      if (res.error) {
-        toast.error('Error fetching anomaly data')
-        return
-      }
-      setAnomalyData(res)
-    })
-  }, [])
-
-  useEffect(() => {
-    ;(async () => {
-      const location = await getUserLocation(
-        userLocation.longitude,
-        userLocation.latitude
-      )
-      setLocationString(location)
-    })()
-  }, [userLocation.latitude, userLocation.longitude])
+  const { data: anomalyData, isSuccess: isAnomalyDataReady } = useQuery<
+    Anomaly[]
+  >({
+    queryKey: ['anomaly_table'],
+    queryFn: getAnomalyTable,
+  })
+  const {
+    data: locationString,
+    isLoading: isLocationLoading,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['user_location', userLocation.latitude, userLocation.longitude],
+    queryFn: () =>
+      getUserLocation(userLocation.longitude, userLocation.latitude),
+  })
 
   return (
     <>
@@ -108,7 +103,11 @@ export default function MapWrapper() {
             </p>
             <p className="text-[#262626] mb-2">
               <span className="text-[#686868] text-sm">Location:</span>{' '}
-              {locationString ?? 'Loading Location....'}
+              {isLocationLoading
+                ? 'Loading location...'
+                : isSuccess
+                ? locationString
+                : 'Error loading location'}
             </p>
             <p className="text-[#262626]">
               <span className="text-[#686868] text-sm">Time:</span>{' '}
@@ -154,7 +153,7 @@ export default function MapWrapper() {
           </button>
         </div>
         <div className="grid h-screen sticky top-0">
-          {!!anomalyData.length && (
+          {!!anomalyData?.length && isSuccess && (
             <Map
               initialViewState={{
                 latitude: +anomalyData[0].Latitude,

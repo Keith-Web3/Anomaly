@@ -14,6 +14,7 @@ import { Anomaly } from './MapWrapper'
 import { predictAnomaly } from '@/actions'
 import LoadingSpinner from './LoadingSpinner'
 import toast from 'react-hot-toast'
+import Chart from './LineChart'
 
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
@@ -55,6 +56,7 @@ function reducer(
 function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const [anomalyMessage, setAnomalyMessage] = useState<string>('')
+  const [isGraphShown, setIsGraphShown] = useState<boolean>(false)
   const [derivedAnomaly, dispatchAnomaly] = useReducer(reducer, anomaly!)
 
   const [state, formAction] = useFormState(
@@ -344,26 +346,43 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
               </div>
             </>
           )}
-          <button
-            className="bg-[#831DD3] cursor-pointer fixed inset-[auto_50%_1em_auto] translate-x-1/2 border-none outline-none text-white px-5 py-3 rounded capitalize"
-            type="button"
-            onClick={() => {
-              const isThereAnomaly = Math.random() >= 0.5
+          {isGraphShown && (
+            <div
+              className="fixed grid inset-0 cursor-pointer z-10 bg-black/70"
+              onClick={() => setIsGraphShown(false)}
+            >
+              <Chart />
+            </div>
+          )}
+          <div className="fixed flex items-center gap-4 inset-[auto_50%_1em_auto] translate-x-1/2 w-max">
+            <button
+              className="bg-[#831DD3] cursor-pointer border-none outline-none text-white px-5 py-3 rounded capitalize"
+              type="button"
+              onClick={() => {
+                const isThereAnomaly = Math.random() >= 0.5
 
-              if (isThereAnomaly) {
-                const anomalyDistance = (Math.random() * 100).toFixed(1)
-                setAnomalyState('detected')
-                setAnomalyMessage(
-                  `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
-                )
-                return
-              }
-              setAnomalyState('none')
-              setAnomalyMessage(`No anomaly detected, keep moving.`)
-            }}
-          >
-            simulate anomaly
-          </button>
+                if (isThereAnomaly) {
+                  const anomalyDistance = (Math.random() * 100).toFixed(1)
+                  setAnomalyState('detected')
+                  setAnomalyMessage(
+                    `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
+                  )
+                  return
+                }
+                setAnomalyState('none')
+                setAnomalyMessage(`No anomaly detected, keep moving.`)
+              }}
+            >
+              simulate anomaly
+            </button>
+            <button
+              className="bg-[#831DD3] cursor-pointer border-none outline-none text-white px-5 py-3 rounded capitalize"
+              type="button"
+              onClick={() => setIsGraphShown(true)}
+            >
+              show graph
+            </button>
+          </div>
         </form>
       </div>
       <AnimatePresence>

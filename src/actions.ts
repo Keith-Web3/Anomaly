@@ -31,18 +31,6 @@ export const signup = async function (initialState: string, data: FormData) {
   return JSON.stringify({ success: 'Signed up successfully' })
 }
 
-export const getAnomalyTable = async function () {
-  const res = await fetch(`${BASE_URL}/api/roads`)
-
-  if (!res.ok) {
-    return { error: 'Something went wrong, please reload.' }
-  }
-
-  const data = await res.json()
-
-  return data.data
-}
-
 export const predictAnomaly = async function (
   _initialState: string,
   formData: FormData
@@ -79,23 +67,5 @@ export const predictAnomaly = async function (
     return JSON.stringify({ anomaly: data.data.Anomaly, id })
   } catch (err) {
     return JSON.stringify({ error: 'Error predicting anomaly', id })
-  }
-}
-
-export async function getUserLocation(lng: number, lat: number) {
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-    lng
-  )},${encodeURIComponent(lat)}.json?access_token=${
-    process.env.NEXT_PUBLIC_MAPBOX_TOKEN
-  }`
-
-  try {
-    const response = await fetch(url)
-    if (!response.ok) throw new Error(`Error: ${response.statusText}`)
-    const data = await response.json()
-    return data.features[0]?.place_name || 'Location not found'
-  } catch (error) {
-    console.error('Geocoding failed:', error)
-    return 'Error getting location'
   }
 }
