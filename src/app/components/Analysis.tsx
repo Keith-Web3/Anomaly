@@ -1,6 +1,13 @@
 'use client'
 
-import React, { useEffect, useRef, useState, useReducer } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useReducer,
+  Dispatch,
+  SetStateAction,
+} from 'react'
 import Image from 'next/image'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useFormStatus, useFormState } from 'react-dom'
@@ -19,10 +26,10 @@ import Chart from './LineChart'
 type AnomalyState = 'idle' | 'detected' | 'none'
 interface AnalysisProps {
   isVoiceMuted: boolean
-  userLocation: {
-    latitude: number
-    longitude: number
-  }
+  userLocation: { latitude: number; longitude: number }
+  pathAction: (payload: FormData) => void
+  setShowAnomalies: Dispatch<SetStateAction<boolean>>
+  showAnomalies: boolean
   anomaly?: Anomaly
 }
 
@@ -53,10 +60,18 @@ function reducer(
   return anomaly as Anomaly | undefined
 }
 
-function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
+function Analysis({
+  isVoiceMuted,
+  pathAction,
+  anomaly,
+  userLocation,
+  showAnomalies,
+  setShowAnomalies,
+}: AnalysisProps) {
   const [anomalyState, setAnomalyState] = useState<AnomalyState>('idle')
   const [anomalyMessage, setAnomalyMessage] = useState<string>('')
   const [isGraphShown, setIsGraphShown] = useState<boolean>(false)
+  const [isPathFormShown, setIsPathFormShown] = useState<boolean>(false)
   const [derivedAnomaly, dispatchAnomaly] = useReducer(reducer, anomaly!)
 
   const [state, formAction] = useFormState(
@@ -358,22 +373,9 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             <button
               className="bg-[#831DD3] cursor-pointer border-none outline-none text-white px-5 py-3 rounded capitalize"
               type="button"
-              onClick={() => {
-                const isThereAnomaly = Math.random() >= 0.5
-
-                if (isThereAnomaly) {
-                  const anomalyDistance = (Math.random() * 100).toFixed(1)
-                  setAnomalyState('detected')
-                  setAnomalyMessage(
-                    `There's an upcoming road anomaly ${anomalyDistance}km away from you.`
-                  )
-                  return
-                }
-                setAnomalyState('none')
-                setAnomalyMessage(`No anomaly detected, keep moving.`)
-              }}
+              onClick={() => setShowAnomalies(prev => !prev)}
             >
-              simulate anomaly
+              {showAnomalies ? 'Show path' : 'Show anomalies'}
             </button>
             <button
               className="bg-[#831DD3] cursor-pointer border-none outline-none text-white px-5 py-3 rounded capitalize"
@@ -382,8 +384,91 @@ function Analysis({ isVoiceMuted, userLocation, anomaly }: AnalysisProps) {
             >
               show graph
             </button>
+            <button
+              className="bg-[#831DD3] cursor-pointer border-none outline-none text-white px-5 py-3 rounded capitalize"
+              type="button"
+              onClick={() => setIsPathFormShown(true)}
+            >
+              set destination
+            </button>
           </div>
         </form>
+        {isPathFormShown && (
+          <div
+            onClick={() => setIsPathFormShown(false)}
+            className="fixed grid inset-0 cursor-pointer bg-black/70"
+          >
+            <form
+              onClick={e => e.stopPropagation()}
+              action={pathAction}
+              className="bg-white p-8 cursor-auto rounded-lg m-auto max-w-120"
+            >
+              <p className="mb-2 font-semibold text-black">From:</p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div>
+                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
+                      Longitude
+                    </p>
+                    <input
+                      type="string"
+                      name="from_longitude"
+                      defaultValue={userLocation.longitude}
+                      required
+                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
+                      Latitude
+                    </p>
+                    <input
+                      type="string"
+                      name="from_latitude"
+                      defaultValue={userLocation.latitude}
+                      required
+                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                    />
+                  </div>
+                </div>
+                <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+                  &deg;(N/S)
+                </p>
+              </div>
+              <p className="mt-4 font-semibold text-black">To:</p>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-2">
+                  <div>
+                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
+                      Longitude
+                    </p>
+                    <input
+                      type="string"
+                      name="to_longitude"
+                      required
+                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#262626]/90 font-medium mb-1">
+                      Latitude
+                    </p>
+                    <input
+                      type="string"
+                      name="to_latitude"
+                      required
+                      className="border border-[#F1F1F1] rounded px-5 py-3 text-black w-[calc((257px_-_0.5em)/2)] outline-none"
+                    />
+                  </div>
+                </div>
+                <p className="text-[#222222] text-center bg-[#EFEFEF] rounded px-4 py-[0.8em] self-end w-full">
+                  &deg;(N/S)
+                </p>
+              </div>
+              <SubmitPathButton />
+            </form>
+          </div>
+        )}
       </div>
       <AnimatePresence>
         {anomalyMessage !== '' && (
@@ -425,6 +510,21 @@ const PredictButton = function () {
     >
       <Image src={starsImg} alt="predict" className="w-6" />
       predict
+      {pending && (
+        <LoadingSpinner radii={20} ringWidth={3} ringColor="#ffffff" />
+      )}
+    </button>
+  )
+}
+const SubmitPathButton = function () {
+  const { pending } = useFormStatus()
+  return (
+    <button
+      disabled={pending}
+      className="flex items-center gap-2 capitalize font-medium bg-[#831DD3] disabled:bg-[#D3D3D3] rounded cursor-pointer px-5 py-3 w-max mx-auto mt-4 justify-center text-white"
+      type="submit"
+    >
+      submit
       {pending && (
         <LoadingSpinner radii={20} ringWidth={3} ringColor="#ffffff" />
       )}

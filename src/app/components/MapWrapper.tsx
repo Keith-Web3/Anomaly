@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Map, { Marker } from 'react-map-gl'
+import Map, { Layer, Marker, Source } from 'react-map-gl'
 import { twMerge } from 'tailwind-merge'
 import { Roboto } from 'next/font/google'
 import Image from 'next/image'
@@ -15,6 +15,8 @@ import volumeMuted from '@/assets/volume_muted.svg'
 import Analysis from './Analysis'
 import { getAnomalyTable, getUserLocation } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
+import { useFormState } from 'react-dom'
+import { getRoute } from '@/actions'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN // Set your mapbox token here
 const roboto = Roboto({
@@ -41,6 +43,11 @@ export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
   const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false)
   const [isMapInfoShown, setIsMapInfoShown] = useState<boolean>(false)
+  const [state, formAction] = useFormState(
+    getRoute,
+    JSON.stringify({ id: -1 }) // redundant
+  )
+  const [showAnomalies, setShowAnomalies] = useState<boolean>(true)
   const [userLocation, setUserLocation] = useState<{
     latitude: number
     longitude: number
@@ -60,9 +67,7 @@ export default function MapWrapper() {
     _id: '',
   })
 
-  const { data: anomalyData, isSuccess: isAnomalyDataReady } = useQuery<
-    Anomaly[]
-  >({
+  const { data: anomalyData } = useQuery<Anomaly[]>({
     queryKey: ['anomaly_table'],
     queryFn: getAnomalyTable,
   })
@@ -168,38 +173,60 @@ export default function MapWrapper() {
               }
               mapboxAccessToken={MAPBOX_TOKEN}
               onClick={e => {
-                console.log(e)
                 setUserLocation({
                   latitude: e.lngLat.lat,
                   longitude: e.lngLat.lng,
                 })
               }}
             >
-              {anomalyData.map(anomaly => (
-                <Marker
-                  longitude={+anomaly.Longitude}
-                  latitude={+anomaly.Latitude}
-                  key={anomaly._id}
-                  className="cursor-pointer"
-                  color={anomaly.Anomaly === 'None' ? 'green' : 'red'}
-                  onClick={() => {
-                    setSelectedAnomaly(anomaly)
-                    console.log(anomaly)
-                    setUserLocation({
-                      latitude: +anomaly.Latitude,
-                      longitude: +anomaly.Longitude,
-                    })
-                    setIsMapInfoShown(true)
-                  }}
-                />
-              ))}
+              {showAnomalies
+                ? anomalyData.map(anomaly => (
+                    <Marker
+                      longitude={+anomaly.Longitude}
+                      latitude={+anomaly.Latitude}
+                      key={anomaly._id}
+                      className="cursor-pointer"
+                      color={anomaly.Anomaly === 'None' ? 'green' : 'red'}
+                      onClick={() => {
+                        setSelectedAnomaly(anomaly)
+                        console.log(anomaly)
+                        setUserLocation({
+                          latitude: +anomaly.Latitude,
+                          longitude: +anomaly.Longitude,
+                        })
+                        setIsMapInfoShown(true)
+                      }}
+                    />
+                  ))
+                : JSON.parse(state).data && (
+                    <Source
+                      id="route"
+                      type="geojson"
+                      data={{
+                        type: 'Feature',
+                        geometry: JSON.parse(state).data,
+                      }}
+                    >
+                      <Layer
+                        id="route-layer"
+                        type="line"
+                        paint={{
+                          'line-color': '#007cbf',
+                          'line-width': 4,
+                        }}
+                      />
+                    </Source>
+                  )}
             </Map>
           )}
         </div>
       </div>
       <Analysis
-        isVoiceMuted={isVoiceMuted}
+        showAnomalies={showAnomalies}
+        setShowAnomalies={setShowAnomalies}
         userLocation={userLocation}
+        isVoiceMuted={isVoiceMuted}
+        pathAction={formAction}
         anomaly={selectedAnomaly}
       />
     </>

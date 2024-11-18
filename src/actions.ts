@@ -69,3 +69,23 @@ export const predictAnomaly = async function (
     return JSON.stringify({ error: 'Error predicting anomaly', id })
   }
 }
+
+export const getRoute = async function (initialState: string, data: FormData) {
+  const fromLatitude = data.get('from_latitude') as string
+  const fromLongitude = data.get('from_longitude') as string
+  const toLatitude = data.get('to_latitude') as string
+  const toLongitude = data.get('to_longitude') as string
+
+  try {
+    const res = await fetch(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${fromLongitude},${fromLatitude};${toLongitude},${toLatitude}?geometries=geojson&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+    )
+
+    if (!res.ok) throw new Error('Error fetching route')
+    const data = await res.json()
+    console.log(data.routes[0].geometry)
+    return JSON.stringify({ success: true, data: data.routes[0].geometry })
+  } catch (_err) {
+    return JSON.stringify({ error: 'Error fetching route' })
+  }
+}
