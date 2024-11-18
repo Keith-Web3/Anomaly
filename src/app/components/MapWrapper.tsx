@@ -129,7 +129,7 @@ export default function MapWrapper() {
         </button>
         <div
           className={twMerge(
-            'flex items-center w-max mx-auto rounded fixed inset-[1em_50%_auto_auto] z-[2] overflow-hidden translate-x-1/2 shadow-[0_1.5px_4.4px_#00000033] bg-white',
+            'flex items-center w-max mx-auto rounded fixed inset-[1em_50%_auto_auto] z-[1] overflow-hidden translate-x-1/2 shadow-[0_1.5px_4.4px_#00000033] bg-white',
             roboto.className
           )}
         >
