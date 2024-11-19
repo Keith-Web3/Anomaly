@@ -1,6 +1,6 @@
 'use client'
 
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, XIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
 
@@ -31,7 +31,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function Chart() {
+export default function Chart({
+  setIsGraphShown,
+}: {
+  setIsGraphShown: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const { data, isSuccess } = useQuery({
     queryKey: ['chartData'],
     queryFn: getGraphData,
@@ -45,6 +49,12 @@ export default function Chart() {
 
   return (
     <Card className="w-3/5 m-auto" onClick={e => e.stopPropagation()}>
+      <XIcon
+        onClick={() => {
+          setIsGraphShown(false)
+        }}
+        className="ml-auto mt-4 mr-4 cursor-pointer"
+      />
       <CardHeader>
         <CardTitle>Distance / Time Graph</CardTitle>
         <CardDescription>

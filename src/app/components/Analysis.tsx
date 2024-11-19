@@ -129,6 +129,10 @@ function Analysis({
         >
           {isPredictShown && (
             <>
+              <XIcon
+                onClick={() => setIsPredictShown(false)}
+                className="ml-auto cursor-pointer"
+              />
               <button
                 ref={buttonRef}
                 className="hidden"
@@ -401,7 +405,7 @@ function Analysis({
               className="fixed grid inset-0 cursor-pointer z-10 bg-black/70"
               onClick={() => setIsGraphShown(false)}
             >
-              <Chart />
+              <Chart setIsGraphShown={setIsGraphShown} />
             </div>
           )}
           <div className="fixed flex items-center gap-4 inset-[auto_50%_1em_auto] translate-x-1/2 w-max">
