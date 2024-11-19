@@ -74,15 +74,14 @@ export const getRoute = async function (initialState: string, data: FormData) {
   const from = (data.get('from') as string).trim().toLowerCase()
   const to = (data.get('to') as string).trim().toLowerCase()
 
-  const locationData = await Promise.all([
-    fetch(`${BASE_URL}/api/nigeria/nigeria/states/${from}`),
-    fetch(`${BASE_URL}/api/nigeria/nigeria/states/${to}`),
-  ])
-  const [fromLocation, toLocation] = await Promise.all(
-    locationData.map(res => res.json())
-  )
-
   try {
+    const locationData = await Promise.all([
+      fetch(`${BASE_URL}/api/nigeria/nigeria/states/${from}`),
+      fetch(`${BASE_URL}/api/nigeria/nigeria/states/${to}`),
+    ])
+    const [fromLocation, toLocation] = await Promise.all(
+      locationData.map(res => res.json())
+    )
     const res = await fetch(
       `https://api.mapbox.com/directions/v5/mapbox/driving/${fromLocation.longitude},${fromLocation.latitude};${toLocation.longitude},${toLocation.latitude}?geometries=geojson&access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
     )
@@ -99,7 +98,8 @@ export const getRoute = async function (initialState: string, data: FormData) {
         fromLongitude: fromLocation.longitude,
       },
     })
-  } catch (_err) {
+  } catch (err) {
+    console.log(err)
     return JSON.stringify({ error: 'Error fetching route', id: Math.random() })
   }
 }
