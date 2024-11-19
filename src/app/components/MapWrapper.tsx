@@ -82,13 +82,12 @@ export default function MapWrapper() {
   })
 
   useEffect(() => {
-    console.log(
-      JSON.parse(state)?.from?.fromLatitude,
-      JSON.parse(state)?.from?.fromLongitude
-    )
     if (JSON.parse(state).success) {
       setShowAnomalies(false)
       toast.success('Route generated successfully')
+    }
+    if (JSON.parse(state).error) {
+      toast.error(JSON.parse(state).error || 'Something went wrong')
     }
   }, [JSON.parse(state).id])
 
