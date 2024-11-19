@@ -43,7 +43,6 @@ export default function MapWrapper() {
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite'>('streets')
   const [isVoiceMuted, setIsVoiceMuted] = useState<boolean>(false)
   const [isMapInfoShown, setIsMapInfoShown] = useState<boolean>(false)
-  const [isPredictShown, setIsPredictShown] = useState<boolean>(false)
   const [state, formAction] = useFormState(
     getRoute,
     JSON.stringify({ id: -1 }) // redundant
